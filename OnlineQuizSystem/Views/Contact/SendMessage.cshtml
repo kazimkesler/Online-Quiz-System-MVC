@@ -1,0 +1,75 @@
+﻿@{
+	ViewData["Title"] = "Mesaj Gönder";
+}
+@model Message
+
+<div class="row justify-content-center">
+	<div class="col-lg-6" id="formContent" style="opacity:0.4">
+		<h1 class="display-6 text-primary">Bize Ulaşın</h1>
+		<p>Eğer bir hatayla karşılaşıyorsanız bildirmek için veya şikayet veyahut görüşlerinizi sunmak isterseniz bize bu sayfadan ulaşabilirsiniz. Şikayet etmek istediğiniz kişiyi mesajda bildiriniz. En kısa zamanda size dönüş yapılacaktır. Dönüş yapılmazsa tekrar mesaj gönderiniz.</p>
+		<form id="contactForm" asp-action="SendMessage" method="post">
+			<div class="form-group mb-4">
+				<label asp-for="Phone"><strong>Telefon Numaranız:</strong></label>
+				<input class="form-control" placeholder="5..." type="tel" asp-for="Phone" />
+				<span class="form-text text-danger" asp-validation-for="Phone"></span>
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Content"><strong>Mesajınız:</strong></label>
+				<textarea class="form-control" type="text" rows="3" asp-for="Content"></textarea>
+				<span class="form-text text-danger" asp-validation-for="Content"></span>
+			</div>
+			<div class="text-center">
+				<button class="btn btn-lg btn-outline-primary" type="submit">
+					Mesajı Gönder
+					<span class="spinner-border spinner-border-sm p-1 ms-1 d-none" id="loadSpinner"></span>
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			@if (@ViewBag.Error is not null) //Global Exception Handler bir hatayla karşılaştığında buraya yönlendirir.
+			{
+				<text>
+						swal("Durum", "Beklenmedik bir hatayla karşılaştınız lütfen bunu bize bildiriniz.", "error");
+				</text>
+			}	
+			$("#formContent").hide().slideDown(250).animate({ opacity: 1 }, 250);
+			let form = $("#contactForm");
+			form.find("button").click(function (event) {
+				if (!form.valid())
+					swal("Durum", "Formu istenilen şekilde doldurunuz.", "warning");
+				else {
+					event.preventDefault();
+					$.ajax({
+						url: form.attr("action"),
+						method: "post",
+						dataType: "json",
+						data: getFormData(form),
+						beforeSend: function () {
+							form.find("#loadSpinner").removeClass("d-none");
+							form.find("button").addClass("disabled");
+						},
+						complete: function () {
+							form.find("#loadSpinner").addClass("d-none");
+							form.find("button").removeClass("disabled");
+						},
+						success: function (response) {
+							if (response) {
+								swal("Durum", "Mesajınız başarıyla iletildi.", "success");
+								form.trigger("reset");
+							}
+							else this.error();
+						},
+						error: function () {
+							swal("Durum", "Mesajınız iletilemedi.", "error");
+						}
+					});
+				}
+			});
+		})
+	</script>
+}

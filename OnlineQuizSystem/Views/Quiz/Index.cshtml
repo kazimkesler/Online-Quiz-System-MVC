@@ -1,0 +1,117 @@
+﻿@{
+	ViewData["Title"] = "Sınav";
+}
+<div class="row justify-content-center">
+	<div class="col-md-10 col-lg-8 col-xxl-6">
+		<h1 class="text-center text-primary display-6">Online Quiz System</h1>
+		<div class="card shadow-lg">
+			<h2 class="card-header fw-light d-flex justify-content-between align-items-center">
+				<span><span id="category">0</span>. Soru:</span>
+				<span class="fs-6 badge bg-primary badge-light"><span id="totalElapsedTime">0</span> sn</span>
+			</h2>
+			<div class="card-body">
+				<div class="mb-4 d-flex justify-content-center align-items-center" style="min-height:16rem">
+					<image id="questionImage" class="img-fluid"></image>
+				</div>
+				<div class="btn-group d-flex mb-4" id="options">
+					<button type="button" class="btn p-2 m-2 rounded-pill border-info shadow-lg" data-action="Quiz/Answer/0">A</button>
+					<button type="button" class="btn p-2 m-2 rounded-pill border-info shadow-lg" data-action="Quiz/Answer/1">B</button>
+					<button type="button" class="btn p-2 m-2 rounded-pill border-info shadow-lg" data-action="Quiz/Answer/2">C</button>
+					<button type="button" class="btn p-2 m-2 rounded-pill border-info shadow-lg" data-action="Quiz/Answer/3">D</button>
+					<button type="button" class="btn p-2 m-2 rounded-pill border-info shadow-lg" data-action="Quiz/Answer/4">E</button>
+				</div>
+				<div class="row">
+					<div class="col-4 col-md-3 my-1">
+						<a id="previous" class="btn p-2 btn-primary w-100 shadow" data-action="Quiz/Previous">Geri</a>
+					</div>
+					<div class="col-4 col-md-6 my-1">
+						<a id="clear" class="btn p-2 btn-info w-100 shadow" data-action="Quiz/Answer">Temizle</a>
+					</div>
+					<div class="col-4 col-md-3 my-1">
+						<a id="next" class="btn p-2 btn-primary w-100 shadow" data-action="Quiz/Next">İleri</a>
+					</div>
+				</div>
+				<div class="d-flex justify-content-between aling-items-center">
+					<div id="hasty" class="text-danger mt-2">Acele etmeyiniz.</div>
+					<div class="text-muted mt-2"><span id="duration"></span> saniyede cevaplandı.</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			let i = 1, interval = i;
+			setInterval(function () {
+				$("#totalElapsedTime").text(i.toFixed(0));
+				i += interval
+			}, interval * 1000);
+
+			$("#questionImage").on("load", function () {
+				$(this).animate({ opacity: 1 }, 250);
+			})
+			function renderQuestion(data) {
+				if (data.path != $("#questionImage").attr("src")) 
+					$("#questionImage").css("opacity", 0).attr("src", data.path);
+
+				$("#category").text(data.category);
+
+				$("#options").children().removeClass("btn-dark disabled");
+
+				let isAnswered = data.answer === 0 || data.answer > 0; //null >= 0 olduğu için
+
+				if (isAnswered)
+					$("#options").children().eq(data.answer).addClass("btn-dark disabled");
+
+				$("#hasty").fadeOut(0);
+
+				data.duration && (isAnswered) ? $("#duration").text((data.duration / 1000).toFixed(2)).parent().fadeIn("fast") : $("#duration").text(0).parent().fadeOut(0);
+
+				isAnswered ? $("#clear").removeClass("disabled") : $("#clear").addClass("disabled");
+
+				data.category === 1 ? $("#previous").addClass("disabled") : $("#previous").removeClass("disabled");
+
+				data.category === 10 ? $("#next").text("Bitir") : $("#next").text("İlerle");
+
+				i = data.totalElapsedTime / 1000;
+
+				$("#totalElapsedTime").text(i.toFixed(0));
+			}
+			function error() {
+				swal("Hata!", "Beklenmedik bir hata meydana geldi.", "error");
+			}
+
+			$.ajaxSetup({
+				error: error
+			})
+
+			$.get("Quiz/GetQuestion", data => renderQuestion(data))
+
+			$("#clear").add("#previous").click(function () {
+				$.get($(this).attr("data-action"), function (data) {
+					renderQuestion(data)
+				})
+			})
+
+			$("#next").click(function () {
+				$.get($(this).attr("data-action"), function (data) {
+					if (data === "finished")
+						window.location.href = "/Result/Index";
+					else if(data === "notEnough")
+						swal("Hata!", "Çok az sayıda soru işaretlediniz. Testi bitirmek için bir kaç soru işaretleyiniz.", "error");
+					else renderQuestion(data)
+				})
+			})
+
+			$("#options").children().click(function () {
+				if (i < 10)
+					$("#hasty").fadeIn("fast")
+				else {
+					$("#hasty").fadeOut(0);
+					$.get($(this).attr("data-action"), data => renderQuestion(data))
+				}
+			})
+		})
+	</script>
+}

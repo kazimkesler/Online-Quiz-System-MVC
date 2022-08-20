@@ -1,0 +1,50 @@
+﻿@{
+	ViewData["Title"] = "Bilgilendirme";
+}
+<div class="row justify-content-center">
+	<div class="col-lg-8 col-xl-6">
+		<div class="card border-info shadow-lg" style="opacity:0.1;">
+			<h5 class="card-header text-primary text-center">Kurallar ve Bilgilendirme</h5>
+			<div class="card-body">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">Testler 10 soruluk sorulardan oluşmaktadır.</li>
+					<li class="list-group-item">Sorular her oturum için farklıdır.</li>
+					<li class="list-group-item">Bir yanlış bir doğruyu götürür.</li>
+					<li class="list-group-item">Süre sınırı yoktur fakat geçen zaman puanınızı etkiler.</li>
+					<li class="list-group-item">Alacağınız puan, sürenizle ters orantılı, netinizle doğru orantılıdır.</li>
+					<li class="list-group-item">Rastgele işaretleyerek testi geçemezsiniz, tespit edilir.</li>
+					<li class="list-group-item">Testi istediğiniz kadar deneme hakkınız var.</li>
+					<li class="list-group-item">Bir soruyu 10 saniyeden kısa sürede çözemezsiniz.</li>
+					<li class="list-group-item">Zamanlayıcı her soru için ayrıdır.</li>
+					<li class="list-group-item"></li>
+				</ul>
+				<div class="form-check my-2">
+					<input class="form-check-input" type="checkbox" id="accept">
+					<label class="form-check-label" for="accept" id="acceptLabel">
+						<strong>Onayla</strong>
+					</label>
+				</div>
+				<div class="mt-2 text-center">
+					<a asp-controller="Home" asp-action="Confirm" id="confirm" class="btn btn-outline-primary border-primary rounded-pill px-4">Testi Başlat</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section FooterScripts{
+	<script>
+		$(document).ready(function() {
+			$(".card").hide().slideDown(100).animate({ opacity: 1 }, 100);
+			$("#confirm").click(function(event) {
+				if (!$("#accept").is(":checked")) {
+					$("#acceptLabel").addClass("text-danger");
+					return false;
+				}
+			})
+			$("#accept").click(function() {
+				if ($(this).is(":checked"))
+					$("#acceptLabel").removeClass("text-danger");
+			})
+		})
+	</script>
+}

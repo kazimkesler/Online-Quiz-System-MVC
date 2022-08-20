@@ -1,0 +1,73 @@
+﻿@{
+	ViewData["Title"] = "login";
+}
+@model LoginVM
+<div class="row justify-content-center p-4">
+	<div class="col-md-9 col-lg-6 bg-dark text-white border border-1 border-info rounded-3">
+		<div class="row p-4">
+			<div class="col-4 p-1">
+				<img src="~/icons/settings.png" class="img-fluid">
+			</div>
+			<div class="col-8 ps-4">
+				<form asp-action="Login" id="loginForm" method="post">
+					<div class="form-group mb-4">
+						<input asp-for="User" type="text" class="form-control" placeholder="Kullanıcı Adı" />
+						<span class="form-text text-danger" asp-validation-for="User"></span>
+					</div>
+					<div class="form-group mb-4">
+						<input asp-for="Password" type="password" class="form-control" placeholder="Şifre" />
+						<span class="form-text text-danger" asp-validation-for="Password"></span>
+					</div>
+					<div class="text-center">
+						<button class="btn btn-lg btn-primary px-4" type="submit">
+							Giriş Yap
+							<span class="spinner-border spinner-border-sm p-1 ms-1 d-none" id="loadSpinner"></span>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			let form = $("#loginForm");
+			form.find("button").click(function (event) {
+				if (!form.valid())
+					swal("Hata", "Formu istenilen şekilde doldurunuz.", "warning");
+				else {
+					event.preventDefault();
+					$.ajax({
+						url: form.attr("action"),
+						method: "post",
+						dataType: "json",
+						data: getFormData(form),
+						beforeSend: function () {
+							form.find("#loadSpinner").removeClass("d-none");
+							form.find("button").addClass("disabled");
+						},
+						complete: function () {
+							form.find("#loadSpinner").addClass("d-none");
+							form.find("button").removeClass("disabled");
+						},
+						success: function (response) {
+							if (response) {
+								swal("Durum", "Giriş yapıldı. Yönlendiriliyorsunuz...", "success");
+								setTimeout(function () {
+									window.location = "/Admin/Index";
+								}, 2000);
+								form.trigger("reset");
+							}
+							else this.error();
+						},
+						error: function () {
+							swal("Durum", "Hatalı giriş.", "error");
+						}
+					})
+				}
+			})
+		})
+	</script>
+}

@@ -1,0 +1,79 @@
+﻿@{
+	ViewData["Title"] = "Top List";
+}
+@model List<UserScoreVM>
+<div class="row justify-content-center">
+	<div class="col-lg-8">
+		<h1 class="display-6 text-primary text-center">En Başarılılar Listesi</h1>
+		<p>Puanlar süreyle ters orantılı ve netlerinizle doğru orantılı hesaplanmıştır.</p>
+		@if (Model.Count == 0)
+		{
+			<h2 class="p-2">Hiç kayıt yok.</h2>
+		}
+		else
+		{
+			<div class="table-responsive" style="opacity:0.4" id="content">
+				<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Ad Soyad</th>
+							<th scope="col">Öğrenim</th>
+							<th scope="col">Bölüm</th>
+							<th scope="col">Meslek</th>
+							<th scope="col">Puan</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							int i = 1;
+							@foreach (var item in Model)
+							{
+								<tr>
+									<th scope="row">@(i++)</th>
+									<td class="text-capitalize">@string.Concat(item.FirstName, " ", item.LastName.Substring(0,1), ".")</td>
+									<td>
+										@switch (item.EducationLevel)
+										{
+											case 0:
+												@("İlkOkul")
+												; break;
+											case 1:
+												@("Ortaokul")
+												; break;
+											case 2:
+												@("Lise")
+												; break;
+											case 3:
+												@("Önlisans")
+												; break;
+											case 4:
+												@("Lisans")
+												; break;
+											case 5:
+												@("Yüksek Lisans")
+												; break;
+											case 6:
+												@("Doktora")
+												; break;
+										}
+									</td>
+									<td class="text-capitalize">@item.Program</td>
+									<td class="text-capitalize">@item.Job</td>
+									<td>@Math.Round(item.Score, 2)</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
+</div>
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			$("#content").hide().slideDown(250).animate({ opacity: 1 }, 250);
+		})
+	</script>
+}

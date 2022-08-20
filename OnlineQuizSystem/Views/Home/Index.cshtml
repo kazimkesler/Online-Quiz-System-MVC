@@ -1,0 +1,58 @@
+﻿@{
+	ViewData["Title"] = "Ana Sayfa";
+}
+@model List<Question>
+<div class="row">
+	<div class="col-xxl-5 p-2">
+		<div class="card shadow-lg h-100 text-center border-info" style="opacity:0.0;" id="mainCard">
+			<div class="card-body d-flex flex-wrap align-content-center justify-content-center">
+				<h1 class="card-body text-center text-primary display-2">Online Quiz System</h1>
+				<div class="card-text">
+					<div class="display-6 my-2">Sınav kurallarını okumak ve ardından sınavı başlatmak için tıklayın.</div>
+					<a class="btn btn-lg btn-outline-primary px-5 my-4 fs-2 rounded-pill" asp-controller="Home" asp-action="QuizInfo">Testi Hazırla</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xxl-7">
+		<div class="row h-100">
+			@{
+				int i = 0;
+				@foreach (var item in Model)
+				{
+					<div class="col-md-6 p-2">
+						<div class="card shadow h-100 border-info no-opacity quesCard" id="quesCard@(i++)">
+							<h5 class="card-header">Örnek</h5>
+							<div class="card-body text-center position-relative">
+								<img class="img-fluid mb-4" data-src="@item.Path" />
+								<div class="text-muted position-absolute start-0 bottom-0 p-2">Cevap: @((char)('A' + item.Answer))</div>
+							</div>
+						</div>
+					</div>
+				}
+			}
+		</div>
+	</div>
+</div>
+
+<div class="bg-dark text-white p-4 position-fixed bottom-0 end-0 start-0 fs-4" style="z-index:9999">
+	Bu siteye girerek çerez politikamızı kabul etmiş sayılırsınız.
+	<button type="button" id="closeCookiePolicy" class="btn-close btn-close-white position-absolute top-50 translate-middle-y me-4 end-0"></button>
+</div>
+
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			$("#closeCookiePolicy").click(function () {
+				$(this).parent().fadeOut("slow");
+			})
+			$("#mainCard").animate({ opacity: 1 }, 200);
+			$("img").on("load", function () {
+				$(this).parents(".quesCard").animate({ opacity: 1 }, 1000);
+			})
+			$("img").each(function () {
+				$(this).attr("src", $(this).attr("data-src"));
+			})
+		})
+	</script>
+}

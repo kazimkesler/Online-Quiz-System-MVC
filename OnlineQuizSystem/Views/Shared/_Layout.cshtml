@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - OnlineQuizSystem</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap-sweetalert/sweetalert.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/OnlineQuizSystem.styles.css" asp-append-version="true" />
+	@await RenderSectionAsync("HeaderScripts", required: false)
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<a class="navbar-brand rounded-pill bg-info bg-gradient px-4" asp-area="" asp-controller="Home" asp-action="Index">Online Quiz System</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Top List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Contact" asp-action="SendMessage">Bize Ulaşın</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" href="" onclick="swal('Hakkında', 'Designed and developed by\nKazım Kesler\nkazimkesler98@hotmail.com'); return false;">Hakkında</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container pb-4">
+		<main role="main">
+			@RenderBody()
+		</main>
+	</div>
+	<footer class="border-top footer text-muted">
+		<div class="container-fluid">
+			<div class="d-flex justify-content-between align-items-center flex-nowrap">
+				<span>&copy; 2022 - OnlineQuizSystem - <a class="text-decoration-none" href="" onclick="swal('Hakkında', 'Designed and developed by\nKazım Kesler\nkazimkesler98@hotmail.com'); return false;">Hakkında</a></span>
+				<span><a class="text-decoration-none link-secondary" asp-controller="Admin" asp-action="Login">Yetkili Girişi</a></span>
+			</div>
+		</div>
+	</footer>
+	<script src="~/lib/jquery/jquery.min.js"></script>
+	<script src="~/lib/jquery-validate/jquery.validate.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+	<script src="~/lib/bootstrap-sweetalert/sweetalert.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("FooterScripts", required: false)
+</body>
+</html>

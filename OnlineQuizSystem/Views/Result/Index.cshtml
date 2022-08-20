@@ -1,0 +1,86 @@
+﻿@{
+	ViewData["Title"] = "Test Sonucu";
+}
+@model List<UserAnswerVM>
+<div class="row justify-content-center">
+	<div class="col-12 col-lg-8">
+		<h1 class="text-center text-primary display-5">Test Özeti</h1>
+		@if (ViewBag.Success)
+		{
+			<div class="alert alert-success d-flex align-items-center mb-4">
+				<h2 class="display-6">Testi başarıyla geçtiniz.</h2>
+				<a class="btn btn-primary btn-lg ms-4" asp-controller="Users" asp-action="Register">Kayıt Ol</a>
+			</div>
+		}
+		else
+		{
+			<div class="alert alert-danger mb-4">
+				<h2 class="display-6">Testi geçemediniz.</h2>
+			</div>
+		}
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th scope="col">Soru Sayısı</th>
+					<th scope="col">Doğru</th>
+					<th scope="col">Yanlış</th>
+					<th scope="col">Boş</th>
+					<th scope="col">Toplam Süre</th>
+					<th scope="col">Puan</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>@Model.Count</th>
+					<td>@ViewBag.Right</td>
+					<td>@ViewBag.Wrong</td>
+					<td>@ViewBag.Blank</td>
+					<td>@Math.Round(ViewBag.Duration / 1000.0 / 60.0, 2) dk</td>
+					<td>@ViewBag.Point</td>
+				</tr>
+			</tbody>
+		</table>
+		<h1 class="text-center text-primary display-5">Test Ayrıntıları</h1>
+		<table class="table table table-bordered">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Soru</th>
+					<th scope="col">Durum</th>
+					<th scope="col">Süre</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<th scope="row">@item.Category</th>
+						<td><image src="@item.Path" class="img-fluid"></image></td>
+						<td>
+							@if (item.Answer is null)
+							{
+								<span class="text-secondary fw-bold">BOŞ</span>
+
+							}
+							else
+							{
+								if (item.CorrectAnswer == item.Answer)
+								{
+									<span class="text-success fw-bold">DOĞRU</span>
+								}
+								else
+								{
+									<span class="text-danger fw-bold">YANLIŞ</span>
+								}
+								char option = 'A';
+								<br />
+								<span>@((char)(option + item.CorrectAnswer)) -> @((char)(option + item.Answer))</span>
+							}
+						</td>
+						<td>@Math.Round(item.Duration / 1000.0, 2) sn</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

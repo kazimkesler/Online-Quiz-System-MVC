@@ -1,0 +1,94 @@
+﻿@{
+	ViewData["Title"] = "Mesajlar";
+}
+@model List<Message>
+
+<div class="row justify-content-center">
+	<div class="col-lg-10" style="opacity:0.4" id="messages">
+		<h1 class="display-6 text-primary text-center">Gelen Mesajlar</h1>
+		<div class="form-group py-4 col-6 col-md-4 col-lg-4">
+			<input type="text" placeholder="İçerik ara" class="form-control" id="findUser" />
+		</div>
+		@if (Model.Count == 0)
+		{
+			<h2 class="p-2">Hiç mesaj yok.</h2>
+		}
+		else
+		{
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Numara</th>
+							<th scope="col">Mesaj</th>
+							<th scope="col">#</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							int i = 1;
+							@foreach (var item in Model)
+							{
+								<tr>
+									<th scope="row">@(i++)</th>
+									<td><a target="_blank" href="https://wa.me/90@(item.Phone)">@string.Concat(item.Phone, "")</a></td>
+									<td>@string.Concat(item.Content, " (", item.SentDate, ")")</td>
+									<td>
+										<button class="btn btn-primary doneButton d-flex align-items-center justify-content-between" style="width:5rem" asp-action="Done" data-message-id="@item.MessageId">
+											<span class="info pe-2">Sil</span>
+											<span class="spinner-border spinner-border-sm d-none loadSpinner"></span>
+
+										</button>
+									</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
+</div>
+
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			$("#messages").hide().slideDown(250).animate({ opacity: 1 }, 250);
+			$("#findUser").keyup(function () {
+				$("table tbody tr").each(function () {
+					$(this).toggle($(this).text().toLowerCase().includes($("#findUser").val().toLowerCase()))
+				})
+			})
+			$(".doneButton").each(function () {
+				$(this).click(function () {
+					let done = $(this);
+					$.ajax({
+						url: done.attr("formaction").concat("/").concat(done.attr("data-message-id")),
+						method: "get",
+						beforeSend: function () {
+							done.find(".loadSpinner").removeClass("d-none")
+							done.addClass("disabled");
+						},
+						complete: function () {
+							done.find(".loadSpinner").addClass("d-none")
+						},
+						success: function (response) {
+							if (response) {
+								done.find(".info").text("OK");
+								done.removeClass("btn-primary").addClass("btn-success");
+								done.parents("tr").fadeOut(2000).delay(2000).remove();
+							}
+							else this.error();
+						},
+						error: function () {
+							done.removeClass("disabled");
+							done.find(".info").text("Error");
+							done.removeClass("btn-primary").addClass("btn-danger");
+						}
+					})
+				})
+			})
+		})
+	</script>
+}

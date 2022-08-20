@@ -1,0 +1,115 @@
+﻿@{
+	ViewData["Title"] = "Register";
+}
+@model User
+<div class="row justify-content-center">
+	<div class="col-lg-6" id="formContent" style="opacity:0.4">
+		<h1 class="display-6 text-primary">Kullanıcı Kaydı</h1>
+		<p>Testi geçtiniz kayıt yapabilirsiniz.</p>
+
+		<form id="registerForm" asp-action="Register" method="post">
+			<div class="form-group mb-4">
+				<label asp-for="Phone"><b>Telefon Numaranız:</b></label>
+				<input class="form-control" placeholder="5..." type="tel" asp-for="Phone" />
+				<span class="form-text text-danger" asp-validation-for="Phone"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="FirstName"><b>Ad:</b></label>
+				<input class="form-control" type="text" asp-for="FirstName" />
+				<span class="form-text text-danger" asp-validation-for="FirstName"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="LastName"><b>Soyad:</b></label>
+				<input class="form-control" type="text" asp-for="LastName" />
+				<span class="form-text text-danger" asp-validation-for="LastName"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Sex"><b>Cinsiyet:</b></label>
+				<select class="form-select" asp-for="Sex">
+					<option value="">Belirtmek istemiyorum</option>
+					<option value="false">Erkek</option>
+					<option value="true">Kadın</option>
+				</select>
+				<span class="form-text text-danger" asp-validation-for="Sex"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Birth"><b>Doğum Tarihi:</b></label>
+				<input class="form-control" type="number" asp-for="Birth" />
+				<span class="form-text text-danger" asp-validation-for="Birth"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="EducationLevel"><b>Öğrenim:</b></label>
+				<select class="form-select" asp-for="EducationLevel">
+					<option value="0">İlkokul</option>
+					<option value="1">Ortaokul</option>
+					<option value="2">Lise</option>
+					<option value="3">Önlisans</option>
+					<option value="4">Lisans</option>
+					<option value="5">Yüksek Lisans</option>
+					<option value="6">Doktora</option>
+				</select>
+				<span class="form-text text-danger" asp-validation-for="EducationLevel"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Program"><b>Bölüm:</b></label>
+				<input class="form-control" type="tel" asp-for="Program" />
+				<span class="form-text text-danger" asp-validation-for="Program"></span><br />
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Job"><b>Meslek:</b></label>
+				<input class="form-control" type="tel" asp-for="Job" />
+				<span class="form-text text-danger" asp-validation-for="Job"></span><br />
+			</div>
+			<div class="text-center mb-2">
+				<button class="btn btn-lg btn-outline-primary" type="submit">
+					Kayıt Ol
+					<span class="spinner-border spinner-border-sm p-1 ms-1 d-none" id="loadSpinner"></span>
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			$("#formContent").hide().slideDown(250).animate({ opacity: 1 }, 250);
+			let form = $("#registerForm");
+			form.find("button").click(function (event) {
+				if (!form.valid())
+					swal("Durum", "Formu istenilen şekilde doldurunuz.", "warning");
+				else {
+					event.preventDefault();
+					$.ajax({
+						url: form.attr("action"),
+						method: "post",
+						dataType: "json",
+						data: getFormData(form),
+						beforeSend: function () {
+							form.find("#loadSpinner").removeClass("d-none");
+							form.find("button").addClass("disabled");
+						},
+						complete: function () {
+							form.find("#loadSpinner").addClass("d-none");
+							form.find("button").removeClass("disabled");
+						},
+						success: function (response) {
+							if (response.status) {
+								swal("Durum", "Başarıyla kaydoldunuz. Yönlendiriliyorsunuz", "success");
+								form.trigger("reset");
+								setTimeout(_=>window.location = "/Home", 2500)
+							}
+							else if (response.responseText == "already_registered") {
+								swal("Durum", "Bu numara zaten kayıtlı.", "error");
+							}
+							else this.error();
+						},
+						error: function () {
+							swal("Durum", "Bir hata oluştu.", "error");
+						}
+					});
+				}
+			});
+		})
+	</script>
+}

@@ -1,0 +1,75 @@
+﻿@{
+	ViewData["Title"] = "Panel";
+}
+@model Group
+<div class="row justify-content-center">
+	<div class="col-md-9 col-lg-6 col-xxl-5">
+		<h1 class="display-4 text-primary">Yönetim Paneli</h1>
+		<hr />
+		<a class="link-info text-decoration-none bg-black fw-bold rounded-pill border border-1 border-dark shadow p-2 px-4	me-2" asp-controller="Contact" asp-action="Index">Okunmamış Mesajlar<span id="messageCount" class="text-warning">+@ViewBag.MessageCount</span></a>
+		<a class="link-info text-decoration-none bg-black fw-bold rounded-pill border border-1 border-dark shadow p-2 px-4" asp-controller="Admin" asp-action="Register">Manuel Kayıt</a>
+		<hr />
+		<h1 class="display-6 text-primary">Grup Bilgisi</h1>
+		<form id="groupForm" asp-action="Update" method="post">
+			<div class="form-group mb-4">
+				<label asp-for="Link"><strong>Grup Linki:</strong></label>
+				<input class="form-control" type="text" asp-for="Link" value="@Model.Link" />
+				<span class="form-text text-danger" asp-validation-for="Link"></span>
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="State"><strong>Alım Durumu:</strong></label>
+				<select class="form-select" asp-for="State" value="@(Model.State)">
+					<option value="false">Kapalı</option>
+					<option value="true">Açık</option>
+				</select>
+				<span class="form-text text-danger" asp-validation-for="State"></span>
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="RequiredScore"><strong>Baraj Skoru:</strong></label>
+				<input class="form-control" type="text" asp-for="RequiredScore" />
+				<span class="form-text text-danger" asp-validation-for="RequiredScore"></span>
+			</div>
+			<button class="link-info bg-black fw-bold rounded-pill border border-1 border-dark shadow p-2 px-4" type="submit">
+				Güncelle
+				<span class="spinner-border spinner-border-sm p-1 ms-1 d-none" id="loadSpinner"></span>
+			</button>
+		</form>
+	</div>
+</div>
+@section FooterScripts{
+	<script>
+		$(document).ready(function () {
+			let form = $("#groupForm");
+			form.find("button").click(function (event) {
+				if (!form.valid())
+					swal("Hata", "Formu istenilen şekilde doldurunuz.", "warning");
+				else {
+					event.preventDefault();
+					$.ajax({
+						url: form.attr("action"),
+						method: "post",
+						dataType: "json",
+						data: getFormData(form),
+						beforeSend: function () {
+							form.find("#loadSpinner").removeClass("d-none");
+							form.find("button").addClass("disabled");
+						},
+						complete: function () {
+							form.find("#loadSpinner").addClass("d-none");
+							form.find("button").removeClass("disabled");
+						},
+						success: function (response) {
+							if (response) {
+								swal("Durum", "Güncellendi!", "success");
+							}
+							else this.error();
+						},
+						error: function () {
+							swal("Durum", "İşlem başarısız.", "error");
+						}
+					})
+				}
+			})
+		})
+	</script>
+}
